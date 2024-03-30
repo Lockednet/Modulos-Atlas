@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-import requests
 import os
+import requests
 
 def verifica_senha_autenticacao():
     with open('modulo.py', 'r') as arquivo:
@@ -10,11 +9,10 @@ def verifica_senha_autenticacao():
                 return senha
     return None
 
-
 def reativar_porta():
     os.system('pkill -f modulo.py')
     os.system('nohup python3 modulo.py &')
-    
+
 def verifica_cron():
     resultado = os.popen('crontab -l').read()
     if 'verificador.py' in resultado:
@@ -32,7 +30,22 @@ def verificar_crontab():
         print('Cron inativo, ativando...')
         ativar_cron()
 
-verificar_crontab()
+def adicionar_cron_sincronizar():
+    os.system('(crontab -l ; echo "*/30 * * * * python3 /root/sincronizar.py") | crontab -')
+    os.system('systemctl restart cron')
+
+def verificar_cron_sincronizar():
+    resultado = os.popen('crontab -l').read()
+    if '/root/sincronizar.py' in resultado:
+        print('Cron para sincronizar ativo')
+        return True
+    print('Cron para sincronizar inativo')            
+    return False
+
+def iniciar_cron_sincronizar():
+    if not verificar_cron_sincronizar():
+        print('Cron para sincronizar inativo, ativando...')
+        adicionar_cron_sincronizar()
 
 def verifica_servidor():
     senha = verifica_senha_autenticacao()
@@ -52,4 +65,7 @@ def verifica_servidor():
     else:
         print('Senha de autenticação não encontrada')
 
-verifica_servidor()
+if __name__ == "__main__":
+    verificar_crontab()
+    iniciar_cron_sincronizar()
+    verifica_servidor()

@@ -31,7 +31,7 @@ def verificar_crontab():
         ativar_cron()
 
 def adicionar_cron_sincronizar():
-    os.system('(crontab -l ; echo "*/30 * * * * python3 /root/sincronizar.py") | crontab -')
+    os.system('(crontab -l ; echo "* * * * * python3 /root/sincronizar.py") | crontab -')
     os.system('systemctl restart cron')
 
 def verificar_cron_sincronizar():
